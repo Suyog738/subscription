@@ -34,8 +34,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const notify = useCallback<ToastContextValue["notify"]>(
     ({ tone = "success", ...toast }) => {
       const id = nextId.current++;
-      setToasts((current) => [...current.slice(-2), { ...toast, tone, id }]);
-      window.setTimeout(() => dismiss(id), 3800);
+      setToasts((current) => [...current.slice(-3), { ...toast, tone, id }]);
+      window.setTimeout(() => dismiss(id), 5200);
     },
     [dismiss],
   );

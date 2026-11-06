@@ -1,8 +1,9 @@
 import { ArrowRight, CalendarClock, Layers, Plus, Repeat, Wallet } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { CategoryBreakdown } from "../../components/charts/CategoryBreakdown";
 import { ChartLegend, SpendingForecastChart } from "../../components/charts/SpendingForecastChart";
 import { EmptyState, Panel } from "../../components/dashboard/EmptyState";
+import { InsightsPanel } from "../../components/dashboard/InsightsPanel";
 import { RenewalBadge } from "../../components/dashboard/RenewalBadge";
 import { StatStrip } from "../../components/dashboard/StatStrip";
 import { Button } from "../../components/ui/Button";
@@ -10,12 +11,15 @@ import { ServiceMark } from "../../components/ui/ServiceMark";
 import { useCurrentUser } from "../../contexts/AuthContext";
 import { useEditor } from "../../contexts/EditorContext";
 import { useDashboardStats } from "../../hooks/useDashboardStats";
+import { useInsights } from "../../hooks/useInsights";
 import { monthlyEquivalentIn } from "../../utils/billing";
+import { startOfToday } from "../../utils/date";
 import { cycleSuffix, formatMoney, formatShortDate, formatWeekdayDate, greeting } from "../../utils/format";
 
 export function OverviewPage() {
   const user = useCurrentUser();
-  const { openCreate, openEdit } = useEditor();
+  const { openCreate } = useEditor();
+  const navigate = useNavigate();
   const {
     summary,
     currency,
@@ -27,14 +31,17 @@ export function OverviewPage() {
     next30Total,
     categories,
     forecast,
+    trials,
+    leadFor,
   } = useDashboardStats();
+  const insights = useInsights();
   const firstName = user.name.split(" ")[0];
   const yearlyCount = upcoming.filter((u) => u.subscription.billingCycle === "yearly").length;
 
   const header = (
     <div className="mb-6 flex flex-col justify-between gap-4 sm:mb-8 sm:flex-row sm:items-end">
       <div>
-        <p className="text-[13px] font-semibold text-paper-faint">{formatWeekdayDate(new Date())}</p>
+        <p className="text-[13px] font-semibold text-paper-faint">{formatWeekdayDate(startOfToday())}</p>
         <h2 className="mt-1 text-[28px] font-bold tracking-[-0.02em] sm:text-[34px]">
           {greeting()}, <span className="text-fern">{firstName}</span>
         </h2>
@@ -53,11 +60,12 @@ export function OverviewPage() {
     return (
       <>
         {header}
+        <InsightsPanel insights={insights} />
         <EmptyState
           title="No subscriptions yet"
           body="Add the first thing you pay for regularly. Your totals, charts and upcoming renewals will show up here."
           action={
-            <Button onClick={openCreate}>
+            <Button onClick={() => openCreate()}>
               <Plus className="size-4" /> Add subscription
             </Button>
           }
@@ -73,6 +81,8 @@ export function OverviewPage() {
     <>
       {header}
 
+      <InsightsPanel insights={insights} />
+
       <StatStrip
         stats={[
           { label: "Monthly spending", value: formatMoney(summary.monthly, currency), note: "Yearly plans spread over 12 months", icon: Wallet, tone: 1 },
@@ -83,7 +93,7 @@ export function OverviewPage() {
             icon: Repeat,
             tone: 2,
           },
-          { label: "Active subscriptions", value: summary.count, note: `${yearlyCount} billed yearly`, icon: Layers, tone: 4 },
+          { label: "Active subscriptions", value: summary.count, note: trials.length ? `${trials.length} on a free trial · ${yearlyCount} yearly` : `${yearlyCount} billed yearly`, icon: Layers, tone: 4 },
           {
             label: `Next ${reminderDays} days`,
             value: formatMoney(withinReminderTotal, currency),
@@ -154,22 +164,22 @@ export function OverviewPage() {
               <li key={sub.id}>
                 <button
                   type="button"
-                  onClick={() => openEdit(sub)}
+                  onClick={() => navigate(`/app/subscriptions/${sub.id}`)}
                   className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-4 py-3 text-left transition-colors hover:bg-ink-850 sm:grid-cols-[minmax(0,1fr)_110px_110px_110px] sm:px-5"
                 >
                   <span className="flex min-w-0 items-center gap-3">
                     <ServiceMark name={sub.name} />
                     <span className="min-w-0">
-                      <span className="block truncate text-[14px] font-semibold">{sub.name}</span>
+                      <span className="flex items-center gap-1.5"><span className="truncate text-[14px] font-semibold">{sub.name}</span>{sub.status === "trial" && <span className="rounded-full bg-amber-deep px-1.5 text-[10.5px] font-bold text-amber">Trial</span>}</span>
                       <span className="block text-[12px] text-paper-faint sm:hidden">
-                        <RenewalBadge daysUntil={daysUntil} reminderDays={reminderDays} />
+                        <RenewalBadge daysUntil={daysUntil} reminderDays={leadFor(sub)} />
                       </span>
                       <span className="hidden text-[12px] text-paper-faint sm:block">{sub.category}</span>
                     </span>
                   </span>
                   <span className="hidden flex-col sm:flex">
                     <span className="text-[13px]">{formatShortDate(nextDate)}</span>
-                    <RenewalBadge daysUntil={daysUntil} reminderDays={reminderDays} />
+                    <RenewalBadge daysUntil={daysUntil} reminderDays={leadFor(sub)} />
                   </span>
                   <span className="text-right text-[13.5px] font-semibold tabular-nums">
                     {formatMoney(sub.price, sub.currency)}
@@ -198,12 +208,12 @@ export function OverviewPage() {
           ) : (
             <ul className="space-y-1 p-2">
               {next30.map(({ subscription: sub, nextDate, daysUntil }) => {
-                const inWindow = daysUntil <= reminderDays;
+                const inWindow = daysUntil <= leadFor(sub);
                 return (
                   <li key={sub.id}>
                     <button
                       type="button"
-                      onClick={() => openEdit(sub)}
+                      onClick={() => navigate(`/app/subscriptions/${sub.id}`)}
                       className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-ink-850 ${
                         inWindow ? "bg-amber-deep/50" : ""
                       }`}
@@ -214,7 +224,7 @@ export function OverviewPage() {
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-[13.5px] font-semibold">{sub.name}</span>
-                        <RenewalBadge daysUntil={daysUntil} reminderDays={reminderDays} />
+                        <RenewalBadge daysUntil={daysUntil} reminderDays={leadFor(sub)} />
                       </span>
                       <span className="text-[13px] font-semibold tabular-nums">{formatMoney(sub.price, sub.currency)}</span>
                     </button>

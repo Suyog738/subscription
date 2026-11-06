@@ -1,13 +1,17 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { CalendarClock, Layers, LayoutGrid, LogOut, Menu, Plus, Settings, X, type LucideIcon } from "lucide-react";
+import { CalendarClock, Landmark, Layers, LayoutGrid, LogOut, Mail, Menu, Plus, Settings, X, type LucideIcon } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import { Logo } from "../components/brand/Logo";
+import { FastForwardMenu } from "../components/dashboard/FastForwardMenu";
 import { NotificationsMenu } from "../components/dashboard/NotificationsMenu";
 import { Button } from "../components/ui/Button";
 import { ThemeToggle } from "../components/ui/ThemeToggle";
 import { useAuth, useCurrentUser } from "../contexts/AuthContext";
+import { BankProvider, useBank } from "../contexts/BankContext";
+import { useDemoClock } from "../contexts/DemoClockContext";
 import { EditorProvider, useEditor } from "../contexts/EditorContext";
+import { NotificationsProvider, useNotifications } from "../contexts/NotificationsContext";
 import { SubscriptionsProvider, useSubscriptions } from "../contexts/SubscriptionsContext";
 import { useToast } from "../contexts/ToastContext";
 import { useDashboardStats } from "../hooks/useDashboardStats";
@@ -24,6 +28,8 @@ const NAV: NavItem[] = [
   { to: "/app", label: "Overview", icon: LayoutGrid, end: true },
   { to: "/app/subscriptions", label: "Subscriptions", icon: Layers },
   { to: "/app/renewals", label: "Upcoming renewals", icon: CalendarClock },
+  { to: "/app/bank", label: "Bank & detection", icon: Landmark },
+  { to: "/app/outbox", label: "Email outbox", icon: Mail },
   { to: "/app/settings", label: "Settings", icon: Settings },
 ];
 
@@ -31,16 +37,25 @@ const TITLES: Record<string, string> = {
   "/app": "Overview",
   "/app/subscriptions": "Subscriptions",
   "/app/renewals": "Upcoming renewals",
+  "/app/bank": "Bank & detection",
+  "/app/outbox": "Email outbox",
   "/app/settings": "Settings",
 };
 
 export function DashboardLayout() {
   const user = useCurrentUser();
+  const { offset } = useDemoClock();
+  // Changing the demo clock remounts the data providers, so every derived value,
+  // bank catch-up and reminder check runs again for the new "today".
   return (
-    <SubscriptionsProvider key={user.id} user={user}>
+    <SubscriptionsProvider key={`${user.id}:${offset}`} user={user}>
+      <BankProvider user={user}>
       <EditorProvider>
-        <Shell />
+        <NotificationsProvider user={user}>
+          <Shell />
+        </NotificationsProvider>
       </EditorProvider>
+      </BankProvider>
     </SubscriptionsProvider>
   );
 }
@@ -49,7 +64,8 @@ function Shell() {
   const location = useLocation();
   const { openCreate } = useEditor();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const title = TITLES[location.pathname.replace(/\/$/, "")] ?? "Overview";
+  const path = location.pathname.replace(/\/$/, "");
+  const title = TITLES[path] ?? (path.startsWith("/app/subscriptions/") ? "Subscription" : "Overview");
 
   useEffect(() => {
     setDrawerOpen(false);
@@ -57,7 +73,7 @@ function Shell() {
   }, [location.pathname]);
 
   useEffect(() => {
-    document.title = `${title} · Renewly`;
+    document.title = `${title} · Mohar`;
   }, [title]);
 
   return (
@@ -110,15 +126,16 @@ function Shell() {
             </button>
             <h1 className="text-[16px] font-bold tracking-[-0.01em]">{title}</h1>
             <div className="ml-auto flex items-center gap-2">
+              <FastForwardMenu />
               <ThemeToggle className="border border-line bg-ink-900" />
               <NotificationsMenu />
               <span className="hidden sm:contents">
-                <Button onClick={openCreate}>
+                <Button onClick={() => openCreate()}>
                   <Plus className="size-4" strokeWidth={2.4} /> Add subscription
                 </Button>
               </span>
               <span className="contents sm:hidden">
-                <Button onClick={openCreate} className="w-9 px-0" aria-label="Add subscription">
+                <Button onClick={() => openCreate()} className="w-9 px-0" aria-label="Add subscription">
                   <Plus className="size-4" strokeWidth={2.4} />
                 </Button>
               </span>
@@ -173,10 +190,15 @@ function SidebarContent() {
   const { notify } = useToast();
   const navigate = useNavigate();
   const { summary, withinReminder } = useDashboardStats();
+  const { connection, suggestions, trials, unnamed } = useBank();
+  const findings = suggestions.length + trials.length + unnamed.length;
+  const { unreadEmails } = useNotifications();
 
   const counts: Record<string, number | undefined> = {
     "/app/subscriptions": summary.count,
     "/app/renewals": withinReminder.length || undefined,
+    "/app/bank": connection ? findings || undefined : undefined,
+    "/app/outbox": unreadEmails || undefined,
   };
 
   async function handleSignOut() {
@@ -196,7 +218,7 @@ function SidebarContent() {
           <NavLink
             key={to}
             to={to}
-            end={end}
+            end={end ?? to === "/app"}
             className={({ isActive }) =>
               `group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[14px] transition-colors ${
                 isActive ? "bg-fern-deep font-semibold text-fern" : "font-medium text-paper-muted hover:bg-ink-850 hover:text-paper"
@@ -209,8 +231,8 @@ function SidebarContent() {
                 <span className="flex-1">{label}</span>
                 {counts[to] !== undefined && (
                   <span
-                    className={`font-mono text-[11.5px] ${
-                      to === "/app/renewals" ? "rounded-md bg-amber-deep px-1.5 font-bold text-amber" : "text-paper-faint"
+                    className={`text-[11.5px] font-semibold tabular-nums ${
+                      to === "/app/renewals" ? "rounded-md bg-amber-deep px-1.5 font-bold text-amber" : to === "/app/bank" || to === "/app/outbox" ? "rounded-md bg-fern-deep px-1.5 font-bold text-fern" : "text-paper-faint"
                     }`}
                   >
                     {counts[to]}

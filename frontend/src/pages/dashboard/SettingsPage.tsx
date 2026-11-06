@@ -1,19 +1,26 @@
-import { Loader2, LogOut, RotateCcw } from "lucide-react";
+import { Landmark, Loader2, LogOut, RotateCcw } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useNavigate } from "react-router";
+import { NotificationSettings } from "../../components/dashboard/NotificationSettings";
 import { Button } from "../../components/ui/Button";
 import { Dialog } from "../../components/ui/Dialog";
 import { Segmented, Select } from "../../components/ui/Field";
 import { useAuth, useCurrentUser } from "../../contexts/AuthContext";
+import { useBank } from "../../contexts/BankContext";
 import { useSubscriptions } from "../../contexts/SubscriptionsContext";
 import { useToast } from "../../contexts/ToastContext";
 import { config } from "../../services/config";
-import { CURRENCIES, type CurrencyCode } from "../../types";
+import { CURRENCIES, type CurrencyCode, type UserSettings } from "../../types";
 import { CURRENCY_LABELS } from "../../utils/currency";
 import { initials } from "../../utils/format";
 
-const REMINDER_OPTIONS = ["1", "3", "7", "14"] as const;
-type ReminderOption = (typeof REMINDER_OPTIONS)[number];
+type ReminderKey = "reminderDays" | "yearlyReminderDays" | "trialReminderDays";
+
+const REMINDER_ROWS: { key: ReminderKey; title: string; description: string; options: string[] }[] = [
+  { key: "reminderDays", title: "Monthly renewals", description: "Notice before a regular monthly charge.", options: ["1", "3", "7"] },
+  { key: "yearlyReminderDays", title: "Yearly renewals", description: "Bigger charges deserve more notice.", options: ["7", "14", "30"] },
+  { key: "trialReminderDays", title: "Free trials", description: "Notice before a trial turns into a paid plan.", options: ["3", "7", "14"] },
+];
 
 function Row({ title, description, children }: { title: string; description: ReactNode; children: ReactNode }) {
   return (
@@ -31,6 +38,7 @@ export function SettingsPage() {
   const user = useCurrentUser();
   const { signOut } = useAuth();
   const { settings, updateSettings, resetDemoData } = useSubscriptions();
+  const { connection } = useBank();
   const { notify } = useToast();
   const navigate = useNavigate();
   const [confirmReset, setConfirmReset] = useState(false);
@@ -41,9 +49,9 @@ export function SettingsPage() {
     notify({ title: "Display currency updated", description: `Totals are now shown in ${code}.` });
   }
 
-  async function changeReminder(value: ReminderOption) {
-    await updateSettings({ reminderDays: Number(value) });
-    notify({ title: "Reminder window updated", description: `You'll see renewals ${value} ${value === "1" ? "day" : "days"} ahead.` });
+  async function changeReminder(key: ReminderKey, value: string) {
+    await updateSettings({ [key]: Number(value) } as Partial<UserSettings>);
+    notify({ title: "Reminder timing updated", description: `${REMINDER_ROWS.find((r) => r.key === key)?.title}: ${value} days before.` });
   }
 
   async function reset() {
@@ -65,7 +73,7 @@ export function SettingsPage() {
         <h2 className="mb-3 text-[13px] font-medium text-paper-faint">Account</h2>
         <div className="card divide-y divide-line rounded-2xl">
           <div className="flex items-center gap-4 px-5 py-5 sm:px-6">
-            <span className="grid size-11 place-items-center rounded-full bg-ink-700 text-[14px] font-semibold">
+            <span className="grid size-11 place-items-center rounded-full bg-fern text-[14px] font-bold text-on-accent">
               {initials(user.name)}
             </span>
             <div className="min-w-0 flex-1">
@@ -81,6 +89,26 @@ export function SettingsPage() {
           </Row>
         </div>
       </section>
+
+      <section>
+        <h2 className="mb-3 text-[13px] font-medium text-paper-faint">Bank</h2>
+        <div className="card rounded-2xl">
+          <Row
+            title={connection ? `Connected to ${connection.bankName}` : "No bank connected"}
+            description={
+              connection
+                ? `${connection.accountName} ${connection.accountMask}. Read-only: Mohar can see payments and the balance, nothing else.`
+                : "Connect your bank so Mohar can find subscriptions, trials and price rises in your payments."
+            }
+          >
+            <Button to="/app/bank" variant="secondary">
+              <Landmark className="size-4" /> {connection ? "Manage" : "Connect"}
+            </Button>
+          </Row>
+        </div>
+      </section>
+
+      <NotificationSettings />
 
       <section>
         <h2 className="mb-3 text-[13px] font-medium text-paper-faint">Preferences</h2>
@@ -103,24 +131,17 @@ export function SettingsPage() {
               </Select>
             </div>
           </Row>
-          <Row
-            title="Reminder window"
-            description="How many days before a renewal it shows up in your reminders and gets marked on the dashboard."
-          >
-            <Segmented<ReminderOption>
-              label="Reminder window"
-              value={String(settings.reminderDays) as ReminderOption}
-              onChange={(value) => void changeReminder(value)}
-              options={REMINDER_OPTIONS.map((value) => ({ value, label: `${value}d` }))}
-              className="flex w-full sm:w-auto"
-            />
-          </Row>
-          <Row
-            title="Email reminders"
-            description="Reminders currently appear inside the app only. Email delivery will come with the backend notification service."
-          >
-            <span className="inline-flex rounded-full bg-ink-800 px-2.5 py-1 text-[12px] text-paper-muted">Not available yet</span>
-          </Row>
+          {REMINDER_ROWS.map((row) => (
+            <Row key={row.key} title={`Remind me: ${row.title.toLowerCase()}`} description={row.description}>
+              <Segmented<string>
+                label={row.title}
+                value={String(settings[row.key])}
+                onChange={(value) => void changeReminder(row.key, value)}
+                options={row.options.map((value) => ({ value, label: `${value} days` }))}
+                className="flex w-full sm:w-auto"
+              />
+            </Row>
+          ))}
         </div>
       </section>
 

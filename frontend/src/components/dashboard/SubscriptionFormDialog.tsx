@@ -1,9 +1,18 @@
-import { Loader2, Trash2 } from "lucide-react";
+import { Landmark, Loader2, Trash2 } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useSubscriptions } from "../../contexts/SubscriptionsContext";
 import { useToast } from "../../contexts/ToastContext";
-import { CATEGORIES, CURRENCIES, type BillingCycle, type CurrencyCode, type Subscription } from "../../types";
+import {
+  CATEGORIES,
+  CURRENCIES,
+  PAYMENT_CHANNELS,
+  type BillingCycle,
+  type CurrencyCode,
+  type Subscription,
+  type SubscriptionInput,
+} from "../../types";
 import { monthlyEquivalent } from "../../utils/billing";
+import { CHANNEL_LABELS } from "../../utils/channels";
 import { formatMoney } from "../../utils/format";
 import {
   NOTES_MAX,
@@ -16,41 +25,44 @@ import { Button } from "../ui/Button";
 import { Dialog } from "../ui/Dialog";
 import { Field, Input, Segmented, Select, Textarea } from "../ui/Field";
 
+export type SubscriptionPrefill = Partial<SubscriptionInput>;
+
 interface Props {
   open: boolean;
   subscription: Subscription | null;
+  prefill?: SubscriptionPrefill;
   onClose: () => void;
   onRequestDelete: (subscription: Subscription) => void;
 }
 
-function initialValues(subscription: Subscription | null, currency: CurrencyCode): SubscriptionFormValues {
-  if (subscription) {
-    return {
-      name: subscription.name,
-      price: String(subscription.price),
-      currency: subscription.currency,
-      billingCycle: subscription.billingCycle,
-      renewalDate: subscription.renewalDate,
-      category: subscription.category,
-      notes: subscription.notes ?? "",
-    };
-  }
-  return { name: "", price: "", currency, billingCycle: "monthly", renewalDate: "", category: "Other", notes: "" };
+function initialValues(base: SubscriptionPrefill, currency: CurrencyCode): SubscriptionFormValues {
+  return {
+    name: base.name ?? "",
+    price: base.price ? String(base.price) : "",
+    currency: base.currency ?? currency,
+    billingCycle: base.billingCycle ?? "monthly",
+    renewalDate: base.renewalDate ?? "",
+    category: base.category ?? "Other",
+    channel: base.channel ?? "card",
+    trial: base.status === "trial",
+    notes: base.notes ?? "",
+  };
 }
 
-export function SubscriptionFormDialog({ open, subscription, onClose, onRequestDelete }: Props) {
+export function SubscriptionFormDialog({ open, subscription, prefill, onClose, onRequestDelete }: Props) {
   const { add, update, settings } = useSubscriptions();
   const { notify } = useToast();
-  const [values, setValues] = useState(() => initialValues(subscription, settings.displayCurrency));
+  const base: SubscriptionPrefill = { ...(subscription ?? {}), ...prefill };
+  const [values, setValues] = useState(() => initialValues(base, settings.displayCurrency));
   const [touched, setTouched] = useState<Partial<Record<keyof SubscriptionFormValues, boolean>>>({});
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
   const isEdit = subscription !== null;
+  const fromBank = !isEdit && base.source === "bank";
   const errors: SubscriptionFormErrors = validateSubscription(values);
-  const visibleError = (field: keyof SubscriptionFormValues) =>
-    submitted || touched[field] ? errors[field] : undefined;
+  const visibleError = (field: keyof SubscriptionFormValues) => (submitted || touched[field] ? errors[field] : undefined);
 
   const set = <K extends keyof SubscriptionFormValues>(field: K, value: SubscriptionFormValues[K]) =>
     setValues((current) => ({ ...current, [field]: value }));
@@ -67,13 +79,23 @@ export function SubscriptionFormDialog({ open, subscription, onClose, onRequestD
 
     setSaving(true);
     try {
-      const input = toSubscriptionInput(values);
+      const input = toSubscriptionInput(values, {
+        previousStatus: subscription?.status,
+        merchantKey: base.merchantKey,
+        source: base.source,
+      });
       if (subscription) {
         await update(subscription.id, input);
         notify({ title: "Changes saved", description: input.name });
       } else {
         await add(input);
-        notify({ title: "Subscription added", description: `${input.name} is now on your list.` });
+        notify({
+          title: input.status === "trial" ? "Trial tracked" : "Subscription added",
+          description:
+            input.status === "trial"
+              ? `We'll warn you ${settings.trialReminderDays} days before ${input.name} turns paid.`
+              : `${input.name} is now on your list.`,
+        });
       }
       onClose();
     } catch (err) {
@@ -87,10 +109,17 @@ export function SubscriptionFormDialog({ open, subscription, onClose, onRequestD
     <Dialog
       open={open}
       onClose={onClose}
-      title={isEdit ? "Edit subscription" : "Add a subscription"}
-      description={isEdit ? undefined : "You can change any of this later."}
+      title={isEdit ? "Edit subscription" : fromBank ? "Add from your payments" : "Add a subscription"}
+      description={isEdit ? undefined : fromBank ? "We filled in what your bank shows. Check it and fill any gaps." : "You can change any of this later."}
     >
       <form onSubmit={onSubmit} noValidate className="space-y-4">
+        {fromBank && (
+          <p className="flex items-start gap-2 rounded-xl bg-fern-deep px-3 py-2.5 text-[13px] text-fern">
+            <Landmark className="mt-0.5 size-4 shrink-0" />
+            Linked to your bank payments, so Mohar can show its history and check charges.
+          </p>
+        )}
+
         <Field label="Name" htmlFor="sub-name" error={visibleError("name")}>
           <Input
             id="sub-name"
@@ -104,12 +133,31 @@ export function SubscriptionFormDialog({ open, subscription, onClose, onRequestD
           />
         </Field>
 
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-line bg-ink-950 px-3 py-2.5">
+          <input
+            type="checkbox"
+            checked={values.trial}
+            onChange={(event) => set("trial", event.target.checked)}
+            className="mt-0.5 size-4 accent-[var(--accent)]"
+          />
+          <span>
+            <span className="block text-[13.5px] font-semibold">This is a free trial</span>
+            <span className="block text-[12px] text-paper-muted">
+              We'll warn you {settings.trialReminderDays} days before it turns into a paid plan.
+            </span>
+          </span>
+        </label>
+
         <div className="grid grid-cols-[minmax(0,1fr)_120px] gap-3">
           <Field
-            label="Price"
+            label={values.trial ? "Price after the trial" : "Price"}
             htmlFor="sub-price"
             error={visibleError("price")}
-            hint={showEquivalent ? `About ${formatMoney(monthlyEquivalent({ price: priceNumber, billingCycle: "yearly" }), values.currency as CurrencyCode)} a month` : undefined}
+            hint={
+              showEquivalent
+                ? `About ${formatMoney(monthlyEquivalent({ price: priceNumber, billingCycle: "yearly" }), values.currency as CurrencyCode)} a month`
+                : undefined
+            }
           >
             <Input
               id="sub-price"
@@ -119,7 +167,7 @@ export function SubscriptionFormDialog({ open, subscription, onClose, onRequestD
               onChange={(event) => set("price", event.target.value.replace(",", "."))}
               onBlur={blur("price")}
               invalid={Boolean(visibleError("price"))}
-              className="font-semibold tabular-nums"
+              className="tabular-nums"
             />
           </Field>
           <Field label="Currency" htmlFor="sub-currency" error={visibleError("currency")}>
@@ -147,7 +195,7 @@ export function SubscriptionFormDialog({ open, subscription, onClose, onRequestD
               className="flex w-full"
             />
           </div>
-          <Field label="Next renewal" htmlFor="sub-date" error={visibleError("renewalDate")}>
+          <Field label={values.trial ? "Trial ends on" : "Next renewal"} htmlFor="sub-date" error={visibleError("renewalDate")}>
             <Input
               id="sub-date"
               type="date"
@@ -159,23 +207,28 @@ export function SubscriptionFormDialog({ open, subscription, onClose, onRequestD
           </Field>
         </div>
 
-        <Field label="Category" htmlFor="sub-category" error={visibleError("category")}>
-          <Select id="sub-category" value={values.category} onChange={(event) => set("category", event.target.value)}>
-            {CATEGORIES.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </Select>
-        </Field>
+        <div className="grid gap-4 sm:grid-cols-2 sm:gap-3">
+          <Field label="Category" htmlFor="sub-category" error={visibleError("category")}>
+            <Select id="sub-category" value={values.category} onChange={(event) => set("category", event.target.value)}>
+              {CATEGORIES.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </Select>
+          </Field>
+          <Field label="Paid through" htmlFor="sub-channel" error={visibleError("channel")}>
+            <Select id="sub-channel" value={values.channel} onChange={(event) => set("channel", event.target.value)}>
+              {PAYMENT_CHANNELS.map((channel) => (
+                <option key={channel} value={channel}>
+                  {CHANNEL_LABELS[channel]}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        </div>
 
-        <Field
-          label="Notes"
-          htmlFor="sub-notes"
-          optional
-          error={visibleError("notes")}
-          hint={`${values.notes.length}/${NOTES_MAX}`}
-        >
+        <Field label="Notes" htmlFor="sub-notes" optional error={visibleError("notes")} hint={`${values.notes.length}/${NOTES_MAX}`}>
           <Textarea
             id="sub-notes"
             placeholder="Why you signed up, who it's shared with, when to cancel…"
@@ -207,7 +260,7 @@ export function SubscriptionFormDialog({ open, subscription, onClose, onRequestD
               Cancel
             </Button>
             <Button type="submit" className="flex-1 sm:min-w-[132px] sm:flex-none" disabled={saving}>
-              {saving ? <Loader2 className="size-4 animate-spin" /> : isEdit ? "Save changes" : "Add subscription"}
+              {saving ? <Loader2 className="size-4 animate-spin" /> : isEdit ? "Save changes" : values.trial ? "Track trial" : "Add subscription"}
             </Button>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { settingsService, subscriptionService } from "../services";
-import type { DemoUser, Subscription, SubscriptionInput, UserSettings } from "../types";
+import { defaultSettings } from "../services/mock/mockSettingsService";
+import type { DemoUser, StopRecord, Subscription, SubscriptionInput, UserSettings } from "../types";
 
 interface SubscriptionsContextValue {
   subscriptions: Subscription[];
@@ -10,6 +11,7 @@ interface SubscriptionsContextValue {
   add: (input: SubscriptionInput) => Promise<Subscription>;
   update: (id: string, input: SubscriptionInput) => Promise<Subscription>;
   remove: (id: string) => Promise<void>;
+  setStop: (id: string, stop: StopRecord | null) => Promise<Subscription>;
   resetDemoData: () => Promise<void>;
   updateSettings: (patch: Partial<UserSettings>) => Promise<void>;
   reload: () => void;
@@ -21,7 +23,7 @@ export function SubscriptionsProvider({ user, children }: { user: DemoUser; chil
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [settings, setSettings] = useState<UserSettings>({ displayCurrency: user.defaultCurrency, reminderDays: 7 });
+  const [settings, setSettings] = useState<UserSettings>(() => defaultSettings(user));
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
@@ -71,6 +73,15 @@ export function SubscriptionsProvider({ user, children }: { user: DemoUser; chil
     [user.id],
   );
 
+  const setStop = useCallback(
+    async (id: string, stop: StopRecord | null) => {
+      const updated = await subscriptionService.setStop(user.id, id, stop);
+      setSubscriptions((current) => current.map((sub) => (sub.id === id ? updated : sub)));
+      return updated;
+    },
+    [user.id],
+  );
+
   const resetDemoData = useCallback(async () => {
     setSubscriptions(await subscriptionService.reset(user.id));
   }, [user.id]);
@@ -87,8 +98,8 @@ export function SubscriptionsProvider({ user, children }: { user: DemoUser; chil
   const reload = useCallback(() => setReloadKey((key) => key + 1), []);
 
   const value = useMemo(
-    () => ({ subscriptions, loading, error, settings, add, update, remove, resetDemoData, updateSettings, reload }),
-    [subscriptions, loading, error, settings, add, update, remove, resetDemoData, updateSettings, reload],
+    () => ({ subscriptions, loading, error, settings, add, update, remove, setStop, resetDemoData, updateSettings, reload }),
+    [subscriptions, loading, error, settings, add, update, remove, setStop, resetDemoData, updateSettings, reload],
   );
 
   return <SubscriptionsContext.Provider value={value}>{children}</SubscriptionsContext.Provider>;

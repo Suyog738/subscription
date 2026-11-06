@@ -1,39 +1,49 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 import { DeleteSubscriptionDialog } from "../components/dashboard/DeleteSubscriptionDialog";
-import { SubscriptionFormDialog } from "../components/dashboard/SubscriptionFormDialog";
+import { StopGuideDialog } from "../components/dashboard/StopGuideDialog";
+import { SubscriptionFormDialog, type SubscriptionPrefill } from "../components/dashboard/SubscriptionFormDialog";
 import type { Subscription } from "../types";
 
 interface EditorContextValue {
-  openCreate: () => void;
-  openEdit: (subscription: Subscription) => void;
+  openCreate: (prefill?: SubscriptionPrefill) => void;
+  openEdit: (subscription: Subscription, patch?: SubscriptionPrefill) => void;
   requestDelete: (subscription: Subscription) => void;
+  requestStop: (subscription: Subscription) => void;
 }
 
 const EditorContext = createContext<EditorContextValue | null>(null);
 
-type FormState = { open: false } | { open: true; subscription: Subscription | null };
+type FormState =
+  | { open: false; subscription: Subscription | null; prefill?: SubscriptionPrefill }
+  | { open: true; subscription: Subscription | null; prefill?: SubscriptionPrefill };
 
 export function EditorProvider({ children }: { children: ReactNode }) {
-  const [form, setForm] = useState<FormState>({ open: false });
+  const [form, setForm] = useState<FormState>({ open: false, subscription: null });
   const [formKey, setFormKey] = useState(0);
   const [deleting, setDeleting] = useState<Subscription | null>(null);
+  const [stopping, setStopping] = useState<Subscription | null>(null);
 
-  const openCreate = useCallback(() => {
+  const openCreate = useCallback((prefill?: SubscriptionPrefill) => {
     setFormKey((key) => key + 1);
-    setForm({ open: true, subscription: null });
+    setForm({ open: true, subscription: null, prefill });
   }, []);
 
-  const openEdit = useCallback((subscription: Subscription) => {
+  const openEdit = useCallback((subscription: Subscription, patch?: SubscriptionPrefill) => {
     setFormKey((key) => key + 1);
-    setForm({ open: true, subscription });
+    setForm({ open: true, subscription, prefill: patch });
   }, []);
 
   const requestDelete = useCallback((subscription: Subscription) => {
-    setForm({ open: false });
+    setForm((current) => ({ ...current, open: false }));
     setDeleting(subscription);
   }, []);
 
-  const value = useMemo(() => ({ openCreate, openEdit, requestDelete }), [openCreate, openEdit, requestDelete]);
+  const requestStop = useCallback((subscription: Subscription) => setStopping(subscription), []);
+
+  const value = useMemo(
+    () => ({ openCreate, openEdit, requestDelete, requestStop }),
+    [openCreate, openEdit, requestDelete, requestStop],
+  );
 
   return (
     <EditorContext.Provider value={value}>
@@ -41,11 +51,13 @@ export function EditorProvider({ children }: { children: ReactNode }) {
       <SubscriptionFormDialog
         key={formKey}
         open={form.open}
-        subscription={form.open ? form.subscription : null}
-        onClose={() => setForm({ open: false })}
+        subscription={form.subscription}
+        prefill={form.prefill}
+        onClose={() => setForm((current) => ({ ...current, open: false }))}
         onRequestDelete={requestDelete}
       />
       <DeleteSubscriptionDialog subscription={deleting} onClose={() => setDeleting(null)} />
+      <StopGuideDialog subscription={stopping} onClose={() => setStopping(null)} />
     </EditorContext.Provider>
   );
 }

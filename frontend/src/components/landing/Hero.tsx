@@ -9,7 +9,7 @@ import { GridBackground } from "./GridBackground";
 import { HeroVisual } from "./HeroVisual";
 import { ease } from "./Reveal";
 
-const WORDS = ["subscription.", "renewal date.", "free trial.", "price increase."];
+const WORDS = ["subscription", "renewals", "free trial", "memberships", "plans", ];
 
 const rise = (delay: number) => ({
   initial: { opacity: 0, y: 20 },
@@ -53,8 +53,8 @@ export function Hero() {
           </motion.h1>
 
           <motion.p {...rise(0.3)} className="mt-6 max-w-xl text-[17px] leading-relaxed text-paper-muted sm:text-lg">
-            Renewly is one calm place for everything you pay for. See what renews next, know your real monthly cost, and get
-            a heads-up before a charge lands.
+            Connect your bank or add them yourself. Mohar finds every subscription, warns you before it renews or a trial
+            turns paid, and shows you how to stop the ones you don't need.
           </motion.p>
 
           <motion.div {...rise(0.42)} className="mt-9 flex flex-col gap-3 sm:flex-row">

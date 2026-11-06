@@ -8,7 +8,7 @@ interface ThemeContextValue {
   toggleTheme: (origin?: { x: number; y: number }) => void;
 }
 
-const STORAGE_KEY = "renewly:theme";
+const STORAGE_KEY = "mohar:theme";
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function currentTheme(): Theme {

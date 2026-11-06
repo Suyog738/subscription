@@ -17,8 +17,24 @@ export function isValidISODate(value: string): boolean {
   return toISODate(parseISODate(value)) === value;
 }
 
+// Demo clock: the prototype can be fast-forwarded. Everything that asks "what day
+// is it?" goes through startOfToday(), so shifting this offset moves the whole app.
+let demoOffsetDays = 0;
+
+export function setDemoOffset(days: number) {
+  demoOffsetDays = days;
+}
+
+export function getDemoOffset(): number {
+  return demoOffsetDays;
+}
+
+export function demoNow(): Date {
+  return new Date(Date.now() + demoOffsetDays * DAY_MS);
+}
+
 export function startOfToday(): Date {
-  const now = new Date();
+  const now = demoNow();
   return new Date(now.getFullYear(), now.getMonth(), now.getDate());
 }
 

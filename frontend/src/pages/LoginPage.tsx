@@ -71,7 +71,7 @@ export function LoginPage() {
         >
           <h1 className="text-[34px] font-extrabold tracking-[-0.02em]">Welcome back</h1>
           <p className="mt-2 text-[15px] text-paper-muted">
-            Renewly is a prototype for now. Use one of the demo accounts below.
+            Mohar is a prototype for now. Use one of the demo accounts below.
           </p>
 
           <form onSubmit={onSubmit} className="mt-8 space-y-4" noValidate>
@@ -80,7 +80,7 @@ export function LoginPage() {
                 id="email"
                 type="email"
                 autoComplete="email"
-                placeholder="maya@renewly.app"
+                placeholder="maya@mohar.app"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 leading={<Mail className="size-4" />}

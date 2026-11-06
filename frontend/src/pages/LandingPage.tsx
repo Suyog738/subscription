@@ -1,4 +1,5 @@
 import { motion, useScroll, useSpring } from "framer-motion";
+import { BankSection } from "../components/landing/BankSection";
 import { FeaturesSection } from "../components/landing/FeaturesSection";
 import { FinalCta } from "../components/landing/FinalCta";
 import { Footer } from "../components/landing/Footer";
@@ -20,6 +21,7 @@ export function LandingPage() {
         <Hero />
         <ProblemSection />
         <FeaturesSection />
+        <BankSection />
         <HowItWorks />
         <PreviewSection />
         <FinalCta />

@@ -1,4 +1,4 @@
-import type { CurrencyCode, Subscription, UpcomingRenewal } from "../types";
+import type { CurrencyCode, Subscription, UpcomingRenewal, UserSettings } from "../types";
 import { convert } from "./currency";
 import { addMonthsClamped, daysBetween, parseISODate, startOfToday, toISODate } from "./date";
 
@@ -139,4 +139,39 @@ export function forecastCharges(subs: Subscription[], currency: CurrencyCode, mo
     }
   }
   return buckets;
+}
+
+// Different kinds of charge deserve different notice: a trial turning paid or a
+// yearly renewal is a bigger surprise than a regular monthly charge.
+export function leadDaysFor(sub: Pick<Subscription, "status" | "billingCycle">, settings: UserSettings): number {
+  if (sub.status === "trial") return settings.trialReminderDays;
+  if (sub.billingCycle === "yearly") return settings.yearlyReminderDays;
+  return settings.reminderDays;
+}
+
+export function isLive(sub: Subscription): boolean {
+  return sub.status !== "stopped";
+}
+
+export interface Savings {
+  monthly: number;
+  soFar: number;
+  count: number;
+}
+
+// Money not spent since each subscription was stopped. A stop that was followed by
+// another charge doesn't count until it's resolved.
+export function savingsFrom(subs: Subscription[], currency: CurrencyCode, today = startOfToday()): Savings {
+  let monthly = 0;
+  let soFar = 0;
+  let count = 0;
+  for (const sub of subs) {
+    if (sub.status !== "stopped" || !sub.stop || sub.stop.check === "charged") continue;
+    const perMonth = monthlyEquivalentIn(sub, currency);
+    const months = Math.max(1, Math.floor(daysBetween(parseISODate(sub.stop.stoppedAt), today) / 30) + 1);
+    monthly += perMonth;
+    soFar += sub.billingCycle === "yearly" ? convert(sub.price, sub.currency, currency) : perMonth * months;
+    count += 1;
+  }
+  return { monthly, soFar, count };
 }

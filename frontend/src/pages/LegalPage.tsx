@@ -6,15 +6,15 @@ const content = {
   privacy: {
     title: "Privacy",
     paragraphs: [
-      "Renewly is currently a prototype. Everything you enter, including subscriptions and settings, is stored in your browser's local storage on this device. Nothing is sent to a server.",
+      "Mohar is currently a prototype. Everything you enter, including subscriptions and settings, is stored in your browser's local storage on this device. Nothing is sent to a server.",
       "Clearing your browser data removes it. Demo accounts are shared fixtures, so don't enter anything personal or sensitive.",
-      "When Renewly has a real backend, this page will describe what is stored, where, and for how long.",
+      "When Mohar has a real backend, this page will describe what is stored, where, and for how long.",
     ],
   },
   terms: {
     title: "Terms",
     paragraphs: [
-      "This prototype is provided for demonstration only. It doesn't connect to banks or payment providers, and it can't cancel subscriptions for you.",
+      "This prototype is provided for demonstration only. Bank connections are simulated with fictional banks and sample payments. Mohar never moves money and can't cancel subscriptions for you.",
       "Spending totals use fixed exchange rates and are estimates. Product names in the demo data are examples and don't imply any partnership or integration.",
       "Reminders are shown inside the app. Email reminders aren't available yet.",
     ],

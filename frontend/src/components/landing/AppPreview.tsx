@@ -58,12 +58,12 @@ export function AppPreview() {
   ];
 
   return (
-    <WindowFrame path="app.renewly.co/overview">
+    <WindowFrame path="app.mohar.app/overview">
       <div className="flex text-left" aria-hidden="true">
         <aside className="hidden w-48 shrink-0 flex-col border-r border-line bg-ink-900 p-3 md:flex">
           <div className="mb-5 flex items-center gap-2 px-1.5 pt-1">
             <LogoMark className="size-6" />
-            <span className="font-display text-[14px] font-bold">Renewly</span>
+            <span className="font-display text-[14px] font-bold">Mohar</span>
           </div>
           <div className="space-y-0.5">
             {nav.map(({ icon: Icon, label, active, count }) => (
@@ -83,7 +83,7 @@ export function AppPreview() {
             <span className="grid size-7 place-items-center rounded-full bg-chart-1 text-[10px] font-bold text-white">MC</span>
             <div className="min-w-0 leading-tight">
               <p className="truncate text-[11.5px] font-semibold">Maya Chen</p>
-              <p className="truncate text-[10px] text-paper-faint">maya@renewly.app</p>
+              <p className="truncate text-[10px] text-paper-faint">maya@mohar.app</p>
             </div>
           </div>
         </aside>

@@ -54,7 +54,7 @@ export function Footer() {
       </div>
       <div className="border-t border-line">
         <div className="mx-auto flex max-w-7xl flex-col gap-2 px-5 py-6 text-[13px] text-paper-faint sm:flex-row sm:justify-between sm:px-8">
-          <p>© {new Date().getFullYear()} Renewly. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Mohar. All rights reserved.</p>
           <p>A working prototype. Data stays in your browser.</p>
         </div>
       </div>

@@ -1,4 +1,4 @@
-const PREFIX = "renewly:";
+const PREFIX = "mohar:";
 
 export function readJSON<T>(key: string): T | null {
   try {

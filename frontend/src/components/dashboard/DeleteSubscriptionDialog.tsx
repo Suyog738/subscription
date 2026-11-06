@@ -53,7 +53,7 @@ export function DeleteSubscriptionDialog({
         </div>
       )}
       <p className="mt-4 text-sm leading-relaxed text-paper-muted">
-        It will be removed from your list and your totals. This only affects Renewly, it doesn't cancel anything with
+        It will be removed from your list and your totals. This only affects Mohar, it doesn't cancel anything with
         the provider.
       </p>
       <div className="mt-6 flex gap-2 sm:justify-end">

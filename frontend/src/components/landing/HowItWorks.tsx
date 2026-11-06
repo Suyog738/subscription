@@ -5,9 +5,9 @@ import { Reveal, SectionHeading } from "./Reveal";
 
 const steps: { title: string; body: string; detail: string; icon: LucideIcon }[] = [
   {
-    title: "Add your subscriptions",
-    body: "Name, price, how often it bills and when it renews next. Most people are done in five minutes.",
-    detail: "Spotify · $11.99 · monthly",
+    title: "Connect your bank, or add them yourself",
+    body: "With read-only access Mohar finds repeating payments, free trials and app store charges. You confirm what's a subscription.",
+    detail: "Found: Spotify · $11.99 · monthly",
     icon: PlusCircle,
   },
   {
@@ -17,9 +17,9 @@ const steps: { title: string; body: string; detail: string; icon: LucideIcon }[]
     icon: CalendarRange,
   },
   {
-    title: "Get a heads-up before you pay",
-    body: "Pick how much notice you want, from one day to two weeks. Renewly flags each renewal before it's charged.",
-    detail: "Reminder: 7 days before",
+    title: "Stop it, and know it stopped",
+    body: "Get a heads-up before each charge, a guide to where it's cancelled, and a check next month that no charge came in.",
+    detail: "Checked: no charge arrived",
     icon: BellRing,
   },
 ];

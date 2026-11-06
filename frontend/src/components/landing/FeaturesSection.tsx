@@ -141,14 +141,14 @@ function ManageVisual() {
 const features: { title: string; body: string; icon: LucideIcon; visual: ReactNode; wide?: boolean }[] = [
   {
     title: "Track every subscription",
-    body: "Add what you pay for, in whichever currency it bills in. Renewal dates roll forward on their own, so the list stays current.",
+    body: "Found in your bank payments or added by hand, in any currency, through card, PayPal, app stores, eSewa or Khalti.",
     icon: Layers,
     visual: <TrackingVisual />,
     wide: true,
   },
   {
-    title: "See renewals before they happen",
-    body: "Anything inside your reminder window is flagged, so you have time to decide.",
+    title: "See renewals and trials coming",
+    body: "More notice for yearly plans and free trials, so a big charge never surprises you.",
     icon: BellRing,
     visual: <RemindersVisual />,
   },
@@ -159,8 +159,8 @@ const features: { title: string; body: string; icon: LucideIcon; visual: ReactNo
     visual: <OverviewVisual />,
   },
   {
-    title: "Change things in one place",
-    body: "Update a price when it goes up, leave a note about why you signed up, and remove what you've cancelled.",
+    title: "Stop it, and know it stopped",
+    body: "See where each subscription is managed and the last day to cancel. Next month, Mohar checks that the charge really disappeared.",
     icon: SlidersHorizontal,
     visual: <ManageVisual />,
     wide: true,
@@ -175,7 +175,7 @@ export function FeaturesSection() {
           center
           label="Features"
           title="One list for everything that renews."
-          body="Renewly does a few things and does them well. No bank connections, no categories to babysit."
+          body="Mohar does a few things and does them well. No bank connections, no categories to babysit."
         />
 
         <div className="mt-16 grid gap-5 md:grid-cols-5">

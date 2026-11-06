@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Home, LayoutDashboard, ListChecks, Menu, Sparkles, X, type LucideIcon } from "lucide-react";
+import { Home, Landmark, LayoutDashboard, ListChecks, Menu, Sparkles, X, type LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { LogoMark } from "../brand/Logo";
@@ -9,6 +9,7 @@ import { ThemeToggle } from "../ui/ThemeToggle";
 const links: { id: string; label: string; icon: LucideIcon }[] = [
   { id: "home", label: "Home", icon: Home },
   { id: "features", label: "Features", icon: Sparkles },
+  { id: "banks", label: "Banks", icon: Landmark },
   { id: "how-it-works", label: "How it works", icon: ListChecks },
   { id: "preview", label: "Dashboard", icon: LayoutDashboard },
 ];
@@ -59,9 +60,9 @@ export function Navbar() {
             : "border-line bg-ink-900/60 shadow-card"
         }`}
       >
-        <a href="#home" className="flex items-center gap-2 rounded-full py-0.5 pr-3 pl-1" aria-label="Renewly home">
+        <a href="#home" className="flex items-center gap-2 rounded-full py-0.5 pr-3 pl-1" aria-label="Mohar home">
           <LogoMark className="size-8" />
-          <span className="font-display text-[16px] font-bold tracking-[-0.02em]">Renewly</span>
+          <span className="font-display text-[16px] font-bold tracking-[-0.02em]">Mohar</span>
         </a>
 
         <span className="mx-1 hidden h-6 w-px bg-line-strong md:block" />

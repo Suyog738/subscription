@@ -24,7 +24,7 @@ export const mockAuthService: AuthService = {
       (candidate) => candidate.email.toLowerCase() === email.trim().toLowerCase(),
     );
     if (!user) throw new ServiceError("There's no demo account with that email.");
-    if (password !== DEMO_PASSWORD) throw new ServiceError("That password doesn't match. Demo accounts use renewly-demo.");
+    if (password !== DEMO_PASSWORD) throw new ServiceError("That password doesn't match. Demo accounts use mohar-demo.");
     writeJSON(SESSION_KEY, { userId: user.id } satisfies StoredSession);
     return user;
   },

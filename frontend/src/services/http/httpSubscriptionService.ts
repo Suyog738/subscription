@@ -11,5 +11,10 @@ export const httpSubscriptionService: SubscriptionService = {
   update: (_userId, id, input) =>
     apiRequest<Subscription>(`/subscriptions/${id}`, { method: "PUT", body: JSON.stringify(input) }),
   remove: (_userId, id) => apiRequest<void>(`/subscriptions/${id}`, { method: "DELETE" }),
+  setStop: (_userId, id, stop) =>
+    apiRequest<Subscription>(`/subscriptions/${id}/stop`, {
+      method: stop ? "PUT" : "DELETE",
+      body: stop ? JSON.stringify(stop) : undefined,
+    }),
   reset: () => apiRequest<Subscription[]>("/subscriptions"),
 };

@@ -9,9 +9,14 @@ import { ServiceError, type SubscriptionService } from "../types";
 
 const keyFor = (userId: string) => `subscriptions:${userId}`;
 
+// Older saved data may predate the status and channel fields.
+function normalize(sub: Subscription): Subscription {
+  return { ...sub, status: sub.status ?? "active", channel: sub.channel ?? "card", source: sub.source ?? "manual" };
+}
+
 function load(userId: string): Subscription[] {
   const stored = readJSON<Subscription[]>(keyFor(userId));
-  if (stored) return stored;
+  if (stored) return stored.map(normalize);
   const seeded = buildSeedSubscriptions(userId);
   writeJSON(keyFor(userId), seeded);
   return seeded;
@@ -57,6 +62,18 @@ export const mockSubscriptionService: SubscriptionService = {
       throw new ServiceError("That subscription no longer exists.");
     }
     save(userId, items.filter((sub) => sub.id !== id));
+  },
+
+  async setStop(userId, id, stop) {
+    await delay();
+    const items = load(userId);
+    const existing = items.find((sub) => sub.id === id && sub.userId === userId);
+    if (!existing) throw new ServiceError("That subscription no longer exists.");
+    const updated: Subscription = stop
+      ? { ...existing, status: "stopped", stop }
+      : { ...existing, status: "active", stop: undefined };
+    save(userId, items.map((sub) => (sub.id === id ? updated : sub)));
+    return updated;
   },
 
   async reset(userId) {
