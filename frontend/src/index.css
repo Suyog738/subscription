@@ -1,0 +1,210 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  Semantic tokens. Names are kept short and stable:
+  ink-*   = surfaces (950 page → 600 strongest fill)
+  paper-* = foreground text
+  fern    = brand accent, amber = "renews soon", clay = "renews now / destructive"
+*/
+:root {
+  --bg: #f5f8f7;
+  --surface: #ffffff;
+  --raised: #f0f4f2;
+  --sunken: #e8eeeb;
+  --fill: #dde5e1;
+  --fill-strong: #c6d2cd;
+
+  --fg: #0e1c19;
+  --fg-muted: #4b5d58;
+  --fg-faint: #7d8d88;
+
+  --accent: #0c9474;
+  --accent-strong: #087a60;
+  --accent-tint: #dcf3eb;
+  --on-accent: #ffffff;
+
+  --amber: #a86a12;
+  --amber-tint: #fcefd7;
+  --clay: #d23f5a;
+  --clay-tint: #fde4e9;
+
+  --line: rgb(14 28 25 / 0.08);
+  --line-strong: rgb(14 28 25 / 0.14);
+  --grid-line: rgb(12 148 116 / 0.09);
+  --glow: rgb(12 148 116 / 0.16);
+
+  --chart-1: #0f9e7e;
+  --chart-2: #7a5af8;
+  --chart-3: #e2972b;
+  --chart-4: #2e90fa;
+  --chart-5: #e5486a;
+  --chart-other: #a3b0ac;
+
+  --shadow-card: 0 1px 2px rgb(14 28 25 / 0.04), 0 8px 24px -12px rgb(14 28 25 / 0.12);
+  --shadow-window: 0 0 0 1px rgb(14 28 25 / 0.06), 0 40px 80px -30px rgb(14 60 50 / 0.28), 0 16px 32px -16px rgb(14 28 25 / 0.14);
+  --shadow-float: 0 12px 32px -10px rgb(14 40 35 / 0.22), 0 2px 6px rgb(14 28 25 / 0.06);
+
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #0b1420;
+  --surface: #111c2b;
+  --raised: #162334;
+  --sunken: #1b2a3d;
+  --fill: #243549;
+  --fill-strong: #31455c;
+
+  --fg: #e7eef6;
+  --fg-muted: #9aabbe;
+  --fg-faint: #67798e;
+
+  --accent: #2fd1a3;
+  --accent-strong: #61e0bb;
+  --accent-tint: #123630;
+  --on-accent: #052219;
+
+  --amber: #f2b04c;
+  --amber-tint: #3a2d16;
+  --clay: #f47a92;
+  --clay-tint: #3e1e29;
+
+  --line: rgb(231 238 246 / 0.08);
+  --line-strong: rgb(231 238 246 / 0.14);
+  --grid-line: rgb(47 209 163 / 0.07);
+  --glow: rgb(47 209 163 / 0.14);
+
+  --chart-1: #1ea882;
+  --chart-2: #8a76f0;
+  --chart-3: #bf8228;
+  --chart-4: #3f92e6;
+  --chart-5: #e05d79;
+  --chart-other: #4b5d72;
+
+  --shadow-card: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 10px 30px -14px rgb(0 0 0 / 0.5);
+  --shadow-window: 0 0 0 1px rgb(231 238 246 / 0.07), 0 40px 90px -30px rgb(0 0 0 / 0.75), 0 0 80px -20px rgb(47 209 163 / 0.12);
+  --shadow-float: 0 14px 36px -12px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(231 238 246 / 0.06);
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Bricolage Grotesque", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --color-ink-950: var(--bg);
+  --color-ink-900: var(--surface);
+  --color-ink-850: var(--raised);
+  --color-ink-800: var(--sunken);
+  --color-ink-700: var(--fill);
+  --color-ink-600: var(--fill-strong);
+
+  --color-paper: var(--fg);
+  --color-paper-muted: var(--fg-muted);
+  --color-paper-faint: var(--fg-faint);
+
+  --color-fern: var(--accent);
+  --color-fern-strong: var(--accent-strong);
+  --color-fern-deep: var(--accent-tint);
+  --color-on-accent: var(--on-accent);
+
+  --color-amber: var(--amber);
+  --color-amber-deep: var(--amber-tint);
+  --color-clay: var(--clay);
+  --color-clay-deep: var(--clay-tint);
+
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-other: var(--chart-other);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-window: var(--shadow-window);
+  --shadow-float: var(--shadow-float);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    @apply bg-ink-950 font-sans text-paper antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--accent) 28%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+  }
+  .dark input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.85);
+  }
+}
+
+/* Theme switch: circular reveal from the toggle button (View Transitions API). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+@utility hero-grid {
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: center top;
+  mask-image: radial-gradient(ellipse 85% 75% at 50% 35%, #000 40%, transparent 85%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 75% at 50% 35%, #000 40%, transparent 85%);
+}
+
+@utility soft-grid {
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+@utility card {
+  border: 1px solid var(--line);
+  background-color: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
