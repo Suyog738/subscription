@@ -22,7 +22,7 @@ const columns = [
 export function Footer() {
   return (
     <footer className="border-t border-line bg-ink-900/50">
-      <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:px-8 md:grid-cols-[1fr_auto]">
+      <div className="mx-auto grid grid-cols-1 max-w-7xl gap-10 px-5 py-14 sm:px-8 md:grid-cols-[1fr_auto]">
         <div className="max-w-xs">
           <Logo />
           <p className="mt-4 text-[14px] leading-relaxed text-paper-muted">

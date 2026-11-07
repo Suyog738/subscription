@@ -44,16 +44,16 @@ export function PartnerDirectory({ banks, onSelect }: { banks: BankInstitution[]
           </p>
         </div>
       ) : (
-        <ul className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <ul className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3 xl:grid-cols-3">
           {shown.map((bank, index) => (
             <motion.li key={bank.id} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.025 }}>
               <button
                 type="button"
                 onClick={() => onSelect(bank)}
-                className="group flex h-full w-full items-center gap-3 rounded-2xl border border-line bg-ink-950 p-4 text-left transition-[border-color,transform,box-shadow] hover:-translate-y-0.5 hover:border-fern/50 hover:shadow-card"
+                className="group flex h-full w-full items-center gap-3 rounded-2xl border border-line bg-ink-950 px-3 py-2.5 text-left sm:p-4 transition-[border-color,transform,box-shadow] hover:-translate-y-0.5 hover:border-fern/50 hover:shadow-card"
               >
                 <span
-                  className="grid size-11 shrink-0 place-items-center rounded-xl font-display text-[13px] font-bold text-white"
+                  className="grid size-9 shrink-0 place-items-center rounded-xl font-display text-[12px] font-bold text-white sm:size-11 sm:text-[13px]"
                   style={{ background: `var(--chart-${bank.tone})` }}
                   aria-hidden="true"
                 >
@@ -64,7 +64,7 @@ export function PartnerDirectory({ banks, onSelect }: { banks: BankInstitution[]
                   <span className="block truncate text-[12.5px] text-paper-faint">
                     {bank.kind} · {bank.country}
                   </span>
-                  <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-ink-850 px-2 py-0.5 text-[11px] font-semibold text-paper-muted">
+                  <span className="mt-1.5 hidden items-center gap-1 rounded-full bg-ink-850 px-2 py-0.5 text-[11px] font-semibold text-paper-muted sm:inline-flex">
                     <Link2 className="size-3" /> Open banking
                   </span>
                 </span>

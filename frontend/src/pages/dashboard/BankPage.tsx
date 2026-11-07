@@ -34,14 +34,14 @@ function NotConnected({ onSelect }: { onSelect: (bank: BankInstitution) => void 
 
   return (
     <div className="space-y-5">
-      <section className="card relative overflow-hidden rounded-3xl p-6 sm:p-8">
+      <section className="card relative overflow-hidden rounded-3xl p-5 sm:p-8">
         <div className="absolute inset-0 hero-grid opacity-70" />
-        <div className="relative grid items-center gap-6 lg:grid-cols-[minmax(0,1fr)_auto]">
+        <div className="relative grid grid-cols-1 items-center gap-6 lg:grid-cols-[minmax(0,1fr)_auto]">
           <div>
             <span className="grid size-12 place-items-center rounded-2xl bg-fern text-on-accent shadow-[0_10px_30px_-10px_var(--accent)]">
               <Landmark className="size-6" />
             </span>
-            <h2 className="mt-5 text-[28px] leading-tight font-extrabold tracking-[-0.02em] sm:text-[34px]">
+            <h2 className="mt-5 text-[25px] leading-tight font-extrabold tracking-[-0.02em] sm:text-[34px]">
               Connect your bank. <span className="text-fern">Mohar finds the rest.</span>
             </h2>
             <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-paper-muted">
@@ -80,11 +80,13 @@ function Connected() {
   const [syncing, setSyncing] = useState(false);
   const [confirmDisconnect, setConfirmDisconnect] = useState(false);
   const [filter, setFilter] = useState<"all" | "subscriptions" | "other">("all");
+  const [showAll, setShowAll] = useState(false);
 
   const recurringKeys = useMemo(() => new Set(detected.map((d) => d.merchantKey)), [detected]);
-  const shown = transactions
+  const matching = transactions
     .filter((t) => (filter === "all" ? true : filter === "subscriptions" ? recurringKeys.has(t.merchantKey) : !recurringKeys.has(t.merchantKey)))
-    .slice(0, 30);
+    .slice(0, 40);
+  const shown = showAll ? matching : matching.slice(0, 10);
   const findings = [...trials, ...unnamed, ...suggestions];
   const linked = subscriptions.filter((sub) => tracked.has(sub.id));
 
@@ -140,7 +142,7 @@ function Connected() {
         {findings.length === 0 ? (
           <EmptyState title="All caught up" body="Everything that repeats in your payments is either on your list or marked as not a subscription." />
         ) : (
-          <ul className="grid gap-3 md:grid-cols-2">
+          <ul className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {findings.map((item, index) => (
               <DetectionCard key={item.merchantKey} item={item} index={index} />
             ))}
@@ -148,7 +150,7 @@ function Connected() {
         )}
       </div>
 
-      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
         <Panel
           title="Recent payments"
           aside={
@@ -180,7 +182,7 @@ function Connected() {
                       {txn.kind === "card-check" ? "Trial check" : "Repeats"}
                     </span>
                   )}
-                  <span className={`w-24 shrink-0 text-right text-[13.5px] font-semibold tabular-nums ${income ? "text-fern" : ""}`}>
+                  <span className={`shrink-0 text-right text-[13.5px] font-semibold whitespace-nowrap tabular-nums sm:w-24 ${income ? "text-fern" : ""}`}>
                     {income && <ArrowDownLeft className="mr-0.5 inline size-3.5" />}
                     {income ? "+" : txn.kind === "card-check" ? "" : "−"}
                     {formatMoney(txn.amount, txn.currency)}
@@ -189,6 +191,16 @@ function Connected() {
               );
             })}
           </ul>
+          {matching.length > 10 && (
+            <button
+              type="button"
+              onClick={() => setShowAll((v) => !v)}
+              className="flex w-full items-center justify-center gap-1.5 border-t border-line px-4 py-3 text-[13px] font-semibold text-paper-muted transition-colors hover:bg-ink-850 hover:text-paper"
+            >
+              {showAll ? "Show fewer" : `Show all ${matching.length} payments`}
+              <ChevronDown className={`size-4 transition-transform ${showAll ? "rotate-180" : ""}`} />
+            </button>
+          )}
         </Panel>
 
         <Panel title="Linked to your list" aside={<span className="text-[13px] font-bold">{linked.length}</span>}>

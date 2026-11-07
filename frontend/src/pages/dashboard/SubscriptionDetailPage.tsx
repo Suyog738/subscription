@@ -75,7 +75,7 @@ function Detail({ sub }: { sub: Subscription }) {
               <p className="mt-1 text-[13.5px] text-paper-muted">
                 {sub.category} · {formatCycle(sub.billingCycle)} · paid through {CHANNEL_LABELS[sub.channel]}
                 {detection && (
-                  <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-fern-deep px-2 py-0.5 text-[11.5px] font-bold text-fern">
+                  <span className="mt-2 flex w-fit items-center gap-1 rounded-full bg-fern-deep px-2 py-0.5 text-[11.5px] font-bold text-fern sm:mt-0 sm:ml-2 sm:inline-flex">
                     <Landmark className="size-3" /> Linked to payments
                   </span>
                 )}
@@ -120,7 +120,7 @@ function Detail({ sub }: { sub: Subscription }) {
         </div>
       )}
 
-      <dl className="grid gap-3 sm:grid-cols-3">
+      <dl className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div className="card rounded-2xl p-4">
           <dt className="text-[12.5px] font-semibold text-paper-muted">{stopped ? "Would have renewed" : "Next charge"}</dt>
           <dd className="mt-1 font-display text-[22px] font-bold">{formatLongDate(next)}</dd>
@@ -180,7 +180,7 @@ function Detail({ sub }: { sub: Subscription }) {
       </section>
 
       {(detection || sub.notes) && (
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {detection && (
             <section className="card rounded-2xl p-5">
               <button type="button" onClick={() => setShowReason((v) => !v)} className="flex w-full items-center justify-between text-left">
@@ -225,7 +225,7 @@ function PaymentHistory({
         const rose = index > 0 && charge.amount > recent[index - 1].amount + 0.005;
         const afterStop = stoppedAt && charge.date > stoppedAt;
         return (
-          <div key={charge.id} className="group flex h-full flex-1 flex-col items-center justify-end">
+          <div key={charge.id} className={`group flex h-full min-w-0 flex-1 flex-col items-center justify-end ${index < recent.length - 5 ? "max-sm:hidden" : ""}`}>
             <span className={`mb-1 text-[11px] font-bold tabular-nums ${rose ? "text-amber" : afterStop ? "text-clay" : "text-paper-muted"}`}>
               {rose && "↑ "}
               {formatMoney(charge.amount, currency)}

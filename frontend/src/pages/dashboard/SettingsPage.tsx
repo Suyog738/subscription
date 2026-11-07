@@ -24,7 +24,7 @@ const REMINDER_ROWS: { key: ReminderKey; title: string; description: string; opt
 
 function Row({ title, description, children }: { title: string; description: ReactNode; children: ReactNode }) {
   return (
-    <div className="grid gap-4 px-5 py-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,280px)] sm:items-center sm:gap-8 sm:px-6">
+    <div className="grid grid-cols-1 gap-4 px-5 py-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,280px)] sm:items-center sm:gap-8 sm:px-6">
       <div>
         <p className="text-[14px] font-medium">{title}</p>
         <p className="mt-1 text-[13px] leading-relaxed text-paper-muted">{description}</p>
@@ -73,14 +73,14 @@ export function SettingsPage() {
         <h2 className="mb-3 text-[13px] font-medium text-paper-faint">Account</h2>
         <div className="card divide-y divide-line rounded-2xl">
           <div className="flex items-center gap-4 px-5 py-5 sm:px-6">
-            <span className="grid size-11 place-items-center rounded-full bg-fern text-[14px] font-bold text-on-accent">
+            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-fern text-[14px] font-bold text-on-accent">
               {initials(user.name)}
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-[15px] font-medium">{user.name}</p>
               <p className="truncate text-[13px] text-paper-muted">{user.email}</p>
             </div>
-            <span className="rounded-full border border-line-strong px-2.5 py-0.5 text-[12px] text-paper-muted">Demo account</span>
+            <span className="hidden shrink-0 rounded-full border border-line-strong px-2.5 py-0.5 text-[12px] text-paper-muted min-[400px]:inline">Demo account</span>
           </div>
           <Row title="Sign out" description="You'll go back to the sign-in page. Your data stays saved in this browser.">
             <Button variant="secondary" onClick={handleSignOut}>
@@ -137,7 +137,7 @@ export function SettingsPage() {
                 label={row.title}
                 value={String(settings[row.key])}
                 onChange={(value) => void changeReminder(row.key, value)}
-                options={row.options.map((value) => ({ value, label: `${value} days` }))}
+                options={row.options.map((value) => ({ value, label: `${value} ${Number(value) === 1 ? "day" : "days"}` }))}
                 className="flex w-full sm:w-auto"
               />
             </Row>

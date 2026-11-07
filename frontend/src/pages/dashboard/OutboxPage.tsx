@@ -53,7 +53,7 @@ export function OutboxPage() {
           }
         />
       ) : (
-        <div className="card grid overflow-hidden rounded-2xl lg:h-[calc(100dvh-14rem)] lg:min-h-[560px] lg:grid-cols-[360px_minmax(0,1fr)]">
+        <div className="card grid grid-cols-1 overflow-hidden rounded-2xl lg:h-[calc(100dvh-14rem)] lg:min-h-[560px] lg:grid-cols-[360px_minmax(0,1fr)]">
           <ul className={`divide-y divide-line overflow-y-auto border-line lg:border-r ${mobileReading ? "hidden lg:block" : ""}`}>
             {emails.map((email) => {
               const active = selected?.id === email.id;

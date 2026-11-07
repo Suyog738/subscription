@@ -150,7 +150,7 @@ export function HeroVisual() {
       </motion.div>
 
       <motion.div style={near} className="pointer-events-none absolute inset-0">
-        <FloatCard className="top-[4%] right-[-2%] w-[210px] sm:right-[-6%]" delay={0.9}>
+        <FloatCard className="top-[-3%] right-[-2%] w-[184px] sm:top-[4%] sm:right-[-6%] sm:w-[210px]" delay={0.9}>
           <div className="flex items-center gap-2 text-[11px] font-semibold text-amber">
             <BellRing className="size-3.5" /> Reminder
           </div>
@@ -176,7 +176,7 @@ export function HeroVisual() {
           </div>
         </FloatCard>
 
-        <FloatCard className="bottom-[8%] left-[-4%] w-[196px] sm:left-[-8%]" delay={1.1} drift={10}>
+        <FloatCard className="bottom-[-9%] left-[-3%] w-[170px] sm:bottom-[8%] sm:left-[-8%] sm:w-[196px]" delay={1.1} drift={10}>
           <p className="text-[11px] font-semibold text-paper-faint">Where it goes</p>
           <ul className="mt-2 space-y-1.5">
             {data.top.map((item, index) => (
@@ -189,7 +189,7 @@ export function HeroVisual() {
           </ul>
         </FloatCard>
 
-        <FloatCard className="right-[-3%] bottom-[18%] sm:right-[-4%]" delay={1.3} drift={6}>
+        <FloatCard className="right-[-4%] bottom-[18%] hidden min-[420px]:block" delay={1.3} drift={6}>
           <div className="flex items-center gap-2.5">
             <span className="grid size-8 place-items-center rounded-xl bg-fern-deep text-fern">
               <TrendingDown className="size-4" />

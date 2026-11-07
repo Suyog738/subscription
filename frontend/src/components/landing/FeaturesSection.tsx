@@ -10,7 +10,7 @@ function TrackingVisual() {
   const rows = [
     { name: "Figma Professional", price: "$15.00", cycle: "/mo" },
     { name: "Notion Plus", price: "$96.00", cycle: "/yr" },
-    { name: "Netflix Basic", price: formatMoney(1199, "NPR", true), cycle: "/mo" },
+    { name: "Netflix Standard", price: formatMoney(13.99, "EUR"), cycle: "/mo" },
   ];
   return (
     <div className="w-full max-w-[320px] space-y-2">
@@ -141,7 +141,7 @@ function ManageVisual() {
 const features: { title: string; body: string; icon: LucideIcon; visual: ReactNode; wide?: boolean }[] = [
   {
     title: "Track every subscription",
-    body: "Found in your bank payments or added by hand, in any currency, through card, PayPal, app stores, eSewa or Khalti.",
+    body: "Found in your bank payments or added by hand, in any currency, through card, PayPal, app stores or Revolut.",
     icon: Layers,
     visual: <TrackingVisual />,
     wide: true,
@@ -169,16 +169,16 @@ const features: { title: string; body: string; icon: LucideIcon; visual: ReactNo
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="scroll-mt-24 py-24 sm:py-32">
+    <section id="features" className="scroll-mt-24 py-16 sm:py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionHeading
           center
           label="Features"
           title="One list for everything that renews."
-          body="Mohar does a few things and does them well. No bank connections, no categories to babysit."
+          body="Mohar does a few things and does them well. Connect a bank or type them in, and there are no categories to babysit."
         />
 
-        <div className="mt-16 grid gap-5 md:grid-cols-5">
+        <div className="mt-16 grid grid-cols-1 gap-5 md:grid-cols-5">
           {features.map((feature, index) => (
             <Reveal key={feature.title} delay={(index % 2) * 0.1} className={feature.wide ? "md:col-span-3" : "md:col-span-2"}>
               <motion.article

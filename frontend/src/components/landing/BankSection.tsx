@@ -20,7 +20,7 @@ const tagStyle: Record<string, string> = {
 };
 
 const points = [
-  { icon: ScanSearch, title: "Finds repeating payments", body: "Including the ones paid through PayPal, app stores, eSewa or Khalti." },
+  { icon: ScanSearch, title: "Finds repeating payments", body: "Including the ones paid through PayPal, app stores or Revolut." },
   { icon: Sparkles, title: "Spots free trials", body: "A 0.00 card check is usually how a trial starts. We flag it that day." },
   { icon: TrendingUp, title: "Catches price rises", body: "When a charge goes up, you'll see by how much and what it costs per year." },
   { icon: Wallet, title: "Warns about your balance", body: "If this week's renewals add up to more than you have, you'll know first." },
@@ -28,8 +28,8 @@ const points = [
 
 export function BankSection() {
   return (
-    <section id="banks" className="scroll-mt-24 py-24 sm:py-32">
-      <div className="mx-auto grid max-w-7xl items-center gap-14 px-5 sm:px-8 lg:grid-cols-[1fr_520px] lg:gap-20">
+    <section id="banks" className="scroll-mt-24 py-16 sm:py-24 lg:py-32">
+      <div className="mx-auto grid grid-cols-1 max-w-7xl items-center gap-14 px-5 sm:px-8 lg:grid-cols-[1fr_520px] lg:gap-20">
         <div>
           <SectionHeading
             label="Works with your bank"
@@ -40,7 +40,7 @@ export function BankSection() {
             }
             body="Your bank already sees every subscription you pay for. With read-only access, Mohar reads those payments and turns them into a list you can act on."
           />
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
             {points.map((point, index) => (
               <Reveal key={point.title} delay={index * 0.08} className="flex gap-3">
                 <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-fern-deep text-fern">
@@ -75,7 +75,7 @@ export function BankSection() {
                   <Landmark className="size-4" />
                 </span>
                 <div className="leading-tight">
-                  <p className="text-[13.5px] font-bold">Larkspur Bank</p>
+                  <p className="text-[13.5px] font-bold">Your bank</p>
                   <p className="text-[11.5px] text-paper-faint">Everyday account •••• 4821</p>
                 </div>
               </div>

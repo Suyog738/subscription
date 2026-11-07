@@ -2,7 +2,7 @@ import { ChevronDown } from "lucide-react";
 import { forwardRef, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
 
 const control =
-  "w-full rounded-xl border bg-ink-950 px-3 text-sm text-paper placeholder:text-paper-faint transition-[border-color,box-shadow,background-color] outline-none focus:border-fern focus:bg-ink-900 focus:shadow-[0_0_0_4px_color-mix(in_oklab,var(--accent)_18%,transparent)] focus-visible:outline-none";
+  "w-full rounded-xl border bg-ink-950 px-3 text-base text-paper sm:text-sm placeholder:text-paper-faint transition-[border-color,box-shadow,background-color] outline-none focus:border-fern focus:bg-ink-900 focus:shadow-[0_0_0_4px_color-mix(in_oklab,var(--accent)_18%,transparent)] focus-visible:outline-none";
 
 function stateClass(invalid?: boolean) {
   return invalid ? "border-clay/70" : "border-line-strong hover:border-paper-faint/50";

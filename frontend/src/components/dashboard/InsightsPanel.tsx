@@ -35,7 +35,7 @@ export function InsightsPanel({ insights }: { insights: Insight[] }) {
           </button>
         )}
       </div>
-      <motion.ul layout className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <motion.ul layout className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
         <AnimatePresence initial={false}>
           {shown.map((insight, index) => {
             const tone = TONES[insight.tone];

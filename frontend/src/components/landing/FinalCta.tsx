@@ -9,7 +9,7 @@ const marks = ["Spotify", "Netflix", "Figma", "GitHub", "Notion", "Canva", "Stra
 export function FinalCta() {
   const reduce = useReducedMotion();
   return (
-    <section className="px-5 pb-24 sm:px-8 sm:pb-32">
+    <section className="px-5 pb-16 sm:px-8 sm:pb-24 lg:pb-32">
       <Reveal className="relative mx-auto max-w-7xl overflow-hidden rounded-[32px] bg-fern px-6 py-16 text-center text-on-accent shadow-window sm:py-24">
         <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(to_right,rgb(255_255_255/0.25)_1px,transparent_1px),linear-gradient(to_bottom,rgb(255_255_255/0.25)_1px,transparent_1px)] [background-size:40px_40px] [mask-image:radial-gradient(ellipse_70%_80%_at_50%_50%,#000,transparent)]" />
         <div className="pointer-events-none absolute inset-x-0 top-6 flex justify-center gap-4 opacity-90">

@@ -31,9 +31,9 @@ export function SpendingForecastChart({
 
   return (
     <div ref={ref}>
-      <div className="relative flex gap-3" style={{ height }}>
+      <div className="relative flex gap-2 sm:gap-3" style={{ height }}>
         {!compact && (
-          <div className="flex w-12 shrink-0 flex-col justify-between pb-6 text-right text-[11px] text-paper-faint tabular-nums">
+          <div className="flex w-10 shrink-0 flex-col justify-between pb-6 text-right text-[10.5px] text-paper-faint tabular-nums sm:w-12 sm:text-[11px]">
             {ticks.map((tick) => (
               <span key={tick} className="-translate-y-1/2 first:translate-y-0 last:translate-y-0">
                 {formatMoney(tick, currency, true)}
@@ -90,7 +90,14 @@ export function SpendingForecastChart({
                       month.isCurrent ? "text-fern" : active ? "text-paper" : "text-paper-faint"
                     }`}
                   >
-                    {compact ? month.label[0] : month.label}
+                    {compact ? (
+                      month.label[0]
+                    ) : (
+                      <>
+                        <span className="sm:hidden">{month.label[0]}</span>
+                        <span className="hidden sm:inline">{month.label}</span>
+                      </>
+                    )}
                   </span>
 
                   <AnimatePresence>
@@ -135,7 +142,8 @@ export function SpendingForecastChart({
         </div>
       </div>
 
-      <table className="sr-only">
+      <div className="sr-only">
+      <table>
         <caption>Projected charges per month</caption>
         <thead>
           <tr>
@@ -156,6 +164,7 @@ export function SpendingForecastChart({
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

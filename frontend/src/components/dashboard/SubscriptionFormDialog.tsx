@@ -181,7 +181,7 @@ export function SubscriptionFormDialog({ open, subscription, prefill, onClose, o
           </Field>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 sm:gap-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-3">
           <div>
             <p className="mb-1.5 text-[13px] font-medium">Billed</p>
             <Segmented<BillingCycle>
@@ -207,7 +207,7 @@ export function SubscriptionFormDialog({ open, subscription, prefill, onClose, o
           </Field>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 sm:gap-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-3">
           <Field label="Category" htmlFor="sub-category" error={visibleError("category")}>
             <Select id="sub-category" value={values.category} onChange={(event) => set("category", event.target.value)}>
               {CATEGORIES.map((category) => (

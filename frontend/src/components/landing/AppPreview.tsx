@@ -118,7 +118,7 @@ export function AppPreview() {
               ))}
             </div>
 
-            <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
               <div className="card rounded-xl p-4">
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <p className="text-[12.5px] font-bold">Next 12 months</p>

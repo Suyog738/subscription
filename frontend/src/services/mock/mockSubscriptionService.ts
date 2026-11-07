@@ -1,5 +1,5 @@
 import { buildSeedSubscriptions } from "../../data/seedSubscriptions";
-import type { Subscription } from "../../types";
+import { PAYMENT_CHANNELS, type Subscription } from "../../types";
 import { delay, readJSON, writeJSON } from "../storage";
 import { ServiceError, type SubscriptionService } from "../types";
 
@@ -11,7 +11,9 @@ const keyFor = (userId: string) => `subscriptions:${userId}`;
 
 // Older saved data may predate the status and channel fields.
 function normalize(sub: Subscription): Subscription {
-  return { ...sub, status: sub.status ?? "active", channel: sub.channel ?? "card", source: sub.source ?? "manual" };
+  // Older saved data can hold channels that no longer exist (e.g. removed wallets); fall back to card.
+  const channel = (PAYMENT_CHANNELS as readonly string[]).includes(sub.channel) ? sub.channel : "card";
+  return { ...sub, status: sub.status ?? "active", channel, source: sub.source ?? "manual" };
 }
 
 function load(userId: string): Subscription[] {

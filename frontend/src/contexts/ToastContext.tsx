@@ -47,7 +47,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         aria-live="polite"
-        className="pointer-events-none fixed inset-x-4 bottom-4 z-[60] flex flex-col items-center gap-2 sm:inset-x-auto sm:right-6 sm:bottom-6 sm:items-end"
+        className="pointer-events-none fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[60] flex flex-col items-center gap-2 sm:inset-x-auto sm:right-6 sm:bottom-6 sm:items-end [&>*:nth-last-child(n+3)]:hidden sm:[&>*:nth-last-child(n+3)]:flex"
       >
         <AnimatePresence initial={false}>
           {toasts.map((toast) => (
@@ -66,7 +66,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               </span>
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-paper">{toast.title}</p>
-                {toast.description && <p className="mt-0.5 text-[13px] text-paper-muted">{toast.description}</p>}
+                {toast.description && <p className="mt-0.5 line-clamp-2 text-[13px] text-paper-muted sm:line-clamp-none">{toast.description}</p>}
               </div>
               <button
                 type="button"

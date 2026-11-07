@@ -104,7 +104,7 @@ export function OverviewPage() {
         ]}
       />
 
-      <div className="mt-5 grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="mt-5 grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_380px]">
         <section className="card rounded-2xl p-4 sm:p-6">
           <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
             <div>
@@ -144,7 +144,7 @@ export function OverviewPage() {
         </section>
       </div>
 
-      <div className="mt-5 grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="mt-5 grid grid-cols-1 items-start gap-5 lg:grid-cols-[minmax(0,1fr)_380px]">
         <Panel
           title="Subscriptions"
           aside={

@@ -30,8 +30,11 @@ export function StopStatusCard({ sub }: { sub: Subscription }) {
   function fastForwardToCheck() {
     if (!stop) return;
     const days = Math.max(1, daysBetween(startOfToday(), parseISODate(stop.checkOn)));
-    notify({ tone: "info", title: `Fast-forwarding ${days} days`, description: `Jumping to ${formatLongDate(stop.checkOn)} to run the check.` });
     advance(days);
+    window.setTimeout(
+      () => notify({ tone: "info", title: `Fast-forwarded ${days} ${days === 1 ? "day" : "days"}`, description: `It's ${formatLongDate(stop.checkOn)} in the demo, so the stop check has run.` }),
+      1400,
+    );
   }
 
   async function restart() {

@@ -115,7 +115,7 @@ function Shell() {
 
       <div className="flex min-w-0 flex-col">
         <header className="sticky top-0 z-30 border-b border-line bg-ink-950/80 backdrop-blur-xl">
-          <div className="flex h-16 items-center gap-3 px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center gap-2 px-3 min-[400px]:px-4 sm:gap-3 sm:px-6 lg:px-8">
             <button
               type="button"
               onClick={() => setDrawerOpen(true)}
@@ -124,10 +124,13 @@ function Shell() {
             >
               <Menu className="size-5" />
             </button>
-            <h1 className="text-[16px] font-bold tracking-[-0.01em]">{title}</h1>
-            <div className="ml-auto flex items-center gap-2">
+            <h1 className="min-w-0 truncate text-[15px] font-bold tracking-[-0.01em] sm:text-[16px]">{title}</h1>
+            <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
               <FastForwardMenu />
-              <ThemeToggle className="border border-line bg-ink-900" />
+              {/* On the narrowest phones the theme switch moves into the side menu. */}
+              <span className="hidden min-[400px]:contents">
+                <ThemeToggle className="border border-line bg-ink-900" />
+              </span>
               <NotificationsMenu />
               <span className="hidden sm:contents">
                 <Button onClick={() => openCreate()}>
@@ -173,7 +176,7 @@ function DataGate({ children }: { children: ReactNode }) {
       <div className="animate-pulse space-y-6" aria-label="Loading">
         <div className="h-7 w-56 rounded-md bg-ink-850" />
         <div className="h-28 rounded-xl bg-ink-900" />
-        <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div className="h-80 rounded-xl bg-ink-900" />
           <div className="h-80 rounded-xl bg-ink-900" />
         </div>
@@ -259,6 +262,9 @@ function SidebarContent() {
             <p className="truncate text-[13.5px] font-medium">{user.name}</p>
             <p className="truncate text-[12px] text-paper-faint">{user.email}</p>
           </div>
+          <span className="contents min-[400px]:hidden">
+            <ThemeToggle className="border border-line bg-ink-900" />
+          </span>
         </div>
         <button
           type="button"

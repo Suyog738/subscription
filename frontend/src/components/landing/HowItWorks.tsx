@@ -30,7 +30,7 @@ export function HowItWorks() {
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
 
   return (
-    <section id="how-it-works" className="relative scroll-mt-24 overflow-hidden py-24 sm:py-32">
+    <section id="how-it-works" className="relative scroll-mt-24 overflow-hidden py-16 sm:py-24 lg:py-32">
       <div className="absolute inset-0 -z-10 bg-ink-850/60" />
       <div className="absolute inset-0 -z-10 soft-grid [mask-image:linear-gradient(to_bottom,transparent,#000_30%,#000_70%,transparent)]" />
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
@@ -45,7 +45,7 @@ export function HowItWorks() {
             {steps.map((step, index) => {
               const left = index % 2 === 0;
               return (
-                <div key={step.title} className="relative grid items-center gap-6 pl-16 sm:grid-cols-2 sm:gap-16 sm:pl-0">
+                <div key={step.title} className="relative grid grid-cols-1 items-center gap-6 pl-16 sm:grid-cols-2 sm:gap-16 sm:pl-0">
                   <motion.span
                     initial={{ scale: 0 }}
                     whileInView={{ scale: 1 }}

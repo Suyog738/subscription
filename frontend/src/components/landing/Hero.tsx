@@ -1,4 +1,5 @@
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { ArrowRight, Check } from "lucide-react";
 import { useRef } from "react";
 import { DEMO_USERS } from "../../data/demoUsers";
@@ -25,13 +26,16 @@ export function Hero() {
   const contentY = useTransform(scrollYProgress, [0, 1], [0, 120]);
   const visualY = useTransform(scrollYProgress, [0, 1], [0, -60]);
   const fade = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  // The scroll parallax only makes sense side by side; stacked on a phone the text and visual would collide.
+  const sideBySide = useMediaQuery("(min-width: 1024px)");
+  const parallax = sideBySide && !reduce;
 
   return (
     <section id="home" ref={ref} className="relative overflow-hidden">
       <GridBackground />
 
-      <div className="relative mx-auto grid min-h-[100svh] max-w-7xl items-center gap-12 px-5 pt-28 pb-16 sm:px-8 lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:pt-24">
-        <motion.div style={reduce ? undefined : { y: contentY, opacity: fade }} className="max-w-2xl">
+      <div className="relative mx-auto grid grid-cols-1 max-w-7xl items-center gap-10 px-5 pt-28 pb-8 lg:min-h-[100svh] lg:gap-12 lg:pb-16 sm:px-8 lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:pt-24">
+        <motion.div style={parallax ? { y: contentY, opacity: fade } : undefined} className="max-w-2xl">
           <motion.p
             {...rise(0.1)}
             className="mb-5 inline-flex items-center gap-2 text-[13px] font-bold tracking-[0.16em] text-fern uppercase"
@@ -90,7 +94,7 @@ export function Hero() {
           </motion.div>
         </motion.div>
 
-        <motion.div style={reduce ? undefined : { y: visualY }} className="relative px-6 sm:px-10 lg:px-4">
+        <motion.div style={parallax ? { y: visualY } : undefined} className="relative px-4 sm:px-10 lg:px-4">
           <HeroVisual />
         </motion.div>
       </div>

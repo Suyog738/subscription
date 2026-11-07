@@ -19,7 +19,7 @@ export function PreviewSection() {
   const opacity = useTransform(scrollYProgress, [0, 0.4], [0.3, 1]);
 
   return (
-    <section id="preview" className="scroll-mt-24 overflow-hidden py-24 sm:py-32">
+    <section id="preview" className="scroll-mt-24 overflow-hidden py-16 sm:py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionHeading
           center
@@ -35,7 +35,7 @@ export function PreviewSection() {
           </motion.div>
         </div>
 
-        <div className="mt-14 grid gap-5 sm:grid-cols-3">
+        <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-3">
           {notes.map((note, index) => (
             <Reveal key={note.title} delay={index * 0.1} className="card rounded-3xl p-6">
               <span className="grid size-10 place-items-center rounded-xl bg-fern-deep text-fern">

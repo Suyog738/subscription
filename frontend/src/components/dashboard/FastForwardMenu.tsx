@@ -40,12 +40,17 @@ export function FastForwardMenu() {
     const target = toISODate(addDays(today, days));
     setOpen(false);
     setCustom("");
-    notify({
-      tone: "info",
-      title: `Fast-forwarded ${days} ${days === 1 ? "day" : "days"}`,
-      description: `It's now ${formatLongDate(target)} in the demo. Renewals, bank payments and reminders have caught up.`,
-    });
     advance(days);
+    // Posted after the catch-up so it lands on top of the reminder and email toasts the jump triggers.
+    window.setTimeout(
+      () =>
+        notify({
+          tone: "info",
+          title: `Fast-forwarded ${days} ${days === 1 ? "day" : "days"}`,
+          description: `It's now ${formatLongDate(target)} in the demo. Renewals, bank payments and reminders have caught up.`,
+        }),
+      1400,
+    );
   }
 
   function onCustom(event: FormEvent) {
@@ -122,7 +127,7 @@ export function FastForwardMenu() {
                     placeholder="e.g. 10"
                     value={custom}
                     onChange={(e) => setCustom(e.target.value)}
-                    className="h-9 w-full rounded-xl border border-line-strong bg-ink-950 pr-12 pl-3 text-sm outline-none focus:border-fern"
+                    className="h-9 w-full rounded-xl border border-line-strong bg-ink-950 pr-12 pl-3 text-base outline-none sm:text-sm focus:border-fern"
                   />
                   <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[12px] text-paper-faint">days</span>
                 </div>

@@ -20,8 +20,8 @@ export function ProblemSection() {
   const y = useTransform(scrollYProgress, [0, 1], [60, -60]);
 
   return (
-    <section className="relative py-24 sm:py-32">
-      <div className="mx-auto grid max-w-7xl items-center gap-16 px-5 sm:px-8 lg:grid-cols-[1fr_460px] lg:gap-24">
+    <section className="relative py-16 sm:py-24 lg:py-32">
+      <div className="mx-auto grid grid-cols-1 max-w-7xl items-center gap-16 px-5 sm:px-8 lg:grid-cols-[1fr_460px] lg:gap-24">
         <div>
           <SectionHeading
             label="The problem"
@@ -32,7 +32,7 @@ export function ProblemSection() {
             }
             body="A free trial here, a yearly plan there. Each one is small enough to ignore, until a few renew in the same week and your statement looks nothing like you expected."
           />
-          <Reveal delay={0.1} className="mt-8 grid max-w-lg gap-3 sm:grid-cols-3">
+          <Reveal delay={0.1} className="mt-8 grid grid-cols-1 max-w-lg gap-3 sm:grid-cols-3">
             {[
               ["Trials", "turn into paid plans quietly"],
               ["Yearly", "plans renew when you've forgotten"],
